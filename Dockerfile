@@ -16,7 +16,8 @@
 #
 # ext sdk container
 #
-FROM crops/yocto:ubuntu-16.04-base
+#FROM crops/yocto:ubuntu-16.04-base
+FROM reliableembeddedsystems/yocto:ubuntu-16.04-base
 
 USER root
 
@@ -27,6 +28,12 @@ COPY usersetup.py \
          restrict_useradd.sh \
      /usr/bin/
 COPY sudoers.usersetup /etc/
+
+# extra tools rber wants in sdk container
+RUN apt-get -y install indent cppcheck
+
+# extra config files rber wants in sdk container
+COPY etc/skel/gitconfig /etc/skel/.gitconfig
 
 # We remove the user because we add a new one of our own.
 # The usersetup user is solely for adding a new user that has the same uid,
