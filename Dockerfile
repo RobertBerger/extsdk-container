@@ -17,7 +17,7 @@
 # ext sdk container
 #
 #FROM crops/yocto:ubuntu-16.04-base
-FROM reliableembeddedsystems/yocto:ubuntu-16.04-base
+FROM reliableembeddedsystems/yocto:ubuntu-18.04-base
 
 USER root
 
@@ -29,11 +29,35 @@ COPY usersetup.py \
      /usr/bin/
 COPY sudoers.usersetup /etc/
 
+# --> rber
 # extra tools rber wants in sdk container
 RUN apt-get -y install indent cppcheck
 
 # extra config files rber wants in sdk container
 COPY etc/skel/gitconfig /etc/skel/.gitconfig
+
+# additional needed packages
+RUN apt-get -y install libncursesw5-dev
+
+# <-- rber
+
+# --> rber gcc-9
+RUN apt-get update && apt-get upgrade -y && apt-get install -y software-properties-common
+#python-software-properties
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test -y && apt-get update
+RUN apt-get install -y gcc g++ gcc-9 g++-9
+#RUN update-alternatives --remove-all gcc
+ # --> libstdc++
+ # we need a libstdc++6 for this to work:
+ #   build/tmp/sysroots-uninative/x86_64-linux/usr/lib/libstdc++.so.6: version `GLIBCXX_3.4.26' not found
+ #   required by build/tmp/work/x86_64-linux/cmake-native/3.12.2-r0/build/Bootstrap.cmk/cmake
+ # RUN apt-get upgrade -y libstdc++6
+ # fix? https://www.yoctoproject.org/pipermail/yocto/2019-April/044995.html
+ #      https://www.yoctoproject.org/pipermail/yocto/2016-November/033134.html
+ # <-- libstdc++
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+RUN gcc -v
+# <-- rber gcc-9
 
 # We remove the user because we add a new one of our own.
 # The usersetup user is solely for adding a new user that has the same uid,
