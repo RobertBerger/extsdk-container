@@ -1,11 +1,11 @@
+source ../container-name.sh
+
 if [ "$#" -ne 1 ]; then
     echo "Usage:"
     echo "./special_tag_push.sh <tag>"
-    echo "./special_tag_push.sh ubuntu-16.04"
+    echo "./special_tag_push.sh ${TAG}"
     exit
 fi
-
-source ../container-name.sh
 
 set -x
 docker images
