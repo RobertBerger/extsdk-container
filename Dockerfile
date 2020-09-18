@@ -37,7 +37,7 @@ RUN apt-get -y install indent cppcheck
 COPY etc/skel/gitconfig /etc/skel/.gitconfig
 
 # additional needed packages
-RUN apt-get -y install libncursesw5-dev
+RUN apt-get -y install libncursesw5-dev apt-utils
 
 # <-- rber
 
