@@ -1,7 +1,9 @@
 source ../container-name.sh
 IMAGE_NAME=$1
 
-PUBLIC_PORT="1984"
+PUBLIC_WEB_PORT="8080"
+PUBLIC_SLAVE_AGENT_PORT="50000"
+JENKINS_HOME_VOL="jenkins_home"
 
 if [ $# -lt 1 ];
 then
@@ -31,12 +33,11 @@ docker ps -a
 # -p : publish port PUBLIC_PORT:INTERNAL_PORT
 # -l : ??? without it no root@1928719827
 # --cap-drop=all: drop all (root) capabilites
-
-# start ash shell - need to start redis manually
-#echo "+ ID=\$(docker run --cap-drop=all -t -i -d -p ${PUBLIC_PORT}:6379 ${IMAGE_NAME} ash -l)"
-#ID=$(docker run --cap-drop=all -t -i -d -p ${PUBLIC_PORT}:6379 ${IMAGE_NAME} ash -l)
-echo "+ ID=\$(docker run -t -i -d -p ${PUBLIC_PORT}:1883 ${IMAGE_NAME})"
-ID=$(docker run -t -i -d -p ${PUBLIC_PORT}:1883 ${IMAGE_NAME})
+# start ash shell - need to start redis manually 
+#echo "+ ID=\$(docker run --cap-drop=all -t -i -d -p ${PUBLIC_PORT}:6379 ${IMAGE_NAME} ash -l)" 
+#ID=$(docker run --cap-drop=all -t -i -d -p ${PUBLIC_PORT}:6379 ${IMAGE_NAME} ash -l) 
+echo "+ ID=\$(docker run -t -i -d -p ${PUBLIC_WEB_PORT}:8080 -p ${PUBLIC_SLAVE_AGENT_PORT}:50000 -v ${JENKINS_HOME_VOL}:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped {${IMAGE_NAME})"
+ID=$(docker run -t -i -d -p ${PUBLIC_WEB_PORT}:8080 -p ${PUBLIC_SLAVE_AGENT_PORT}:50000 -v ${JENKINS_HOME_VOL}:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped {${IMAGE_NAME})
 
 echo "+ ID ${ID}"
 
